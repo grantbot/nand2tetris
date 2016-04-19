@@ -7,6 +7,10 @@
  * And gate:
  * out = 1 if (a == 1 and b == 1)
  *       0 otherwise
+ *
+ * Pure Nand:
+ * Nand(a=a, b=b, out=nandout);
+ * Nand(a=nandout, b=nandout, out=out);
  */
 
 CHIP And {
