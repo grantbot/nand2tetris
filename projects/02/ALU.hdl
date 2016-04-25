@@ -42,28 +42,26 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Optionally zero inputs
-   Mux16(a=x, b=false, sel=zx, out=zeroX);
-   Mux16(a=y, b=false, sel=zy, out=zeroY);
+    // Zero-ing and Negate-ing should be moved / tested in a separate chip
+    // When both zx and zy are 1, output is all 1s b/c we zero first, then negate.
+    Not16(in=x, out=notX);
+    Not16(in=y, out=notY);
+    Mux4Way16(a=x, b=notX, c=false, d=true, sel[1]=zx, sel[0]=nx, out=inputX);
+    Mux4Way16(a=y, b=notY, c=false, d=true, sel[1]=zy, sel[0]=ny, out=inputY);
 
-   // Optionally negate inputs
-   Not16(in=zeroX, out=notZeroX);
-   Mux16(a=zeroX, b=notZeroX, sel=nx, out=inputX);
-   Not16(in=zeroY, out=notZeroY);
-   Mux16(a=zeroY, b=notZeroY, sel=ny, out=inputY);
+    // Any way to do one or the other without calculating both in advance?
+    // Apply + or &
+    Add16(a=inputX, b=inputY, out=xPlusY);
+    And16(a=inputX, b=inputY, out=xAndY);
+    Mux16(a=xAndY, b=xPlusY, sel=f, out=result);
 
-   // Apply + or &
-   Add16(a=inputX, b=inputY, out=xPlusY);
-   And16(a=inputX, b=inputY, out=xAndY);
-   Mux16(a=xAndY, b=xPlusY, sel=f, out=result);
+    // Optionally negate and split up the output to set zr, ng
+    Not16(in=result, out=notResult);
+    Mux16(a=result, b=notResult, sel=no, out[15]=ng, out[0..7]=outHalf1, out[8..15]=outHalf2, out=out);
 
-   // Optionally negate output
-   Not16(in=result, out=notResult);
-   Mux16(a=result, b=notResult, sel=no, out[15]=ng, out[0..7]=outHalf1, out[8..15]=outHalf2, out=out);
-
-   // Set zr
-   Or8Way(in=outHalf1, out=or0to7);
-   Or8Way(in=outHalf2, out=or7to15);
-   Or(a=or0to7, b=or7to15, out=notZr);
-   Not(in=notZr, out=zr);
+    // Set zr, by implementing Or16Way, which also should be a separate chip
+    Or8Way(in=outHalf1, out=or0to7);
+    Or8Way(in=outHalf2, out=or7to15);
+    Or(a=or0to7, b=or7to15, out=notZr);
+    Not(in=notZr, out=zr);
 }
