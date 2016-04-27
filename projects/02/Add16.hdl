@@ -14,6 +14,10 @@ CHIP Add16 {
 
     PARTS:
    // Put you code here:
+   // EOCS p. 53: This is hella inefficient, due to the cost of propagating
+   // the carry bit from the least significant bit pair to the most significant.
+   // This can be optimized via "carry look-ahead" techniques. Probably worth it,
+   // since Add16 is such an oft-used, low-level function.
    HalfAdder(a=a[0], b=b[0], sum=out[0], carry=CARRY0);
    FullAdder(a=a[1], b=b[1], c=CARRY0, sum=out[1], carry=CARRY1);
    FullAdder(a=a[2], b=b[2], c=CARRY1, sum=out[2], carry=CARRY2);
