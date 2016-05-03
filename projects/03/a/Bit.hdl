@@ -14,7 +14,14 @@ CHIP Bit {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    // Feedback loop! Thanks DFF! muxOut can be garbage between clock ticks
+    // and we don't care because DFFs are clocked (latched between ticks, only
+    // change on tick). Lets us pipe output back into input which is impossible
+    // for combinational circuits (where time doesn't really exist and your output
+    // would depend on your input which would depend on your output and so on).
+    // Sequential circuits only change on ticks, which lets us coordinate them
+    // throughout the system. They are all synced to the same master clock. 
+
     Mux(a=dffOut, b=in, sel=load, out=muxOut);
     DFF(in=muxOut, out=dffOut, out=out);
 }
