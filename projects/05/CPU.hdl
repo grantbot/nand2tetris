@@ -94,7 +94,7 @@ CHIP CPU {
       f=instruction[7],
       no=instruction[6],
 
-      zr=aluIsZero, ng=aluIsNeg
+      zr=aluIsZero, ng=aluIsNeg,
 
       out=aluOut, out=outM
     );
