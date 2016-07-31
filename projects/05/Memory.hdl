@@ -5,20 +5,20 @@
 
 /**
  * The complete address space of the Hack computer's memory,
- * including RAM and memory-mapped I/O. 
+ * including RAM and memory-mapped I/O.
  * The chip facilitates read and write operations, as follows:
  *     Read:  out(t) = Memory[address(t)](t)
  *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
- * In words: the chip always outputs the value stored at the memory 
- * location specified by address. If load==1, the in value is loaded 
- * into the memory location specified by address. This value becomes 
+ * In words: the chip always outputs the value stored at the memory
+ * location specified by address. If load==1, the in value is loaded
+ * into the memory location specified by address. This value becomes
  * available through the out output from the next time step onward.
  * Address space rules:
- * Only the upper 16K+8K+1 words of the Memory chip are used. 
- * Access to address>0x6000 is invalid. Access to any address in 
- * the range 0x4000-0x5FFF results in accessing the screen memory 
- * map. Access to address 0x6000 results in accessing the keyboard 
- * memory map. The behavior in these addresses is described in the 
+ * Only the upper 16K+8K+1 words of the Memory chip are used.
+ * Access to address>0x6000 is invalid. Access to any address in
+ * the range 0x4000-0x5FFF results in accessing the screen memory
+ * map. Access to address 0x6000 results in accessing the keyboard
+ * memory map. The behavior in these addresses is described in the
  * Screen and Keyboard chip specifications given in the book.
  */
 
@@ -31,8 +31,8 @@ CHIP Memory {
     // is the first register of Screen. 1 followed by 13 0's is 8,192 (8K) in decimal--i.e.
     // Memory[24,576] is the Keyboard register. Thus, we know that if the 15th bit is flipped
     // we're in Screen, and if the 14th bit is also flipped we're at Keyboard. Anything beyond
-    // that is invalid.
-    // Powers of two (log2 is rational) will always be a 1 followed by only 0's in binary, just
+    // that is invalid. Everything below Memory[16,384] is our RAM16K chip.
+    // Powers of two will always be a 1 followed by only 0's in binary, just
     // like powers of ten in decimal.
 
     DMux4Way(
@@ -46,8 +46,7 @@ CHIP Memory {
     );
 
     // Internal pins can only be fed once by a part's output pin. Remember that
-    // Dmux4Way and Or are combinational, so all outputs and all outputs are always
-    // getting *something*.
+    // Dmux4Way and Or are combinational, so all outputs are always getting *something*.
     Or(a=ramLoad0, b=ramLoad1, out=ramLoad);
 
     RAM16K(in=in, load=ramLoad, address=address[0..13], out=ramOut);
