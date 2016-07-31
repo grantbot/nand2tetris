@@ -49,25 +49,27 @@ CHIP CPU {
     /**
      * A Register
      */
-    // Load if d1 or is A-instruction
-    Not(in=instruction[15], out=negLead);
-    Or(a=instruction[5], b=negLead, out=loadA);
+    // Load if d1 or is A-instruction (when instruction[15] would be 0)
+    Not(in=instruction[15], out=notFirstBit);
+    Or(a=instruction[5], b=notFirstBit, out=writeA);
 
-    // ALU Output or input instruction selector
+    // If C-Instruction then feed in ALU output, otherwise feed the entire
+    // A-instruction
     Mux16(a=instruction, b=aluOut, sel=instruction[15], out=aluOrInstruction);
     // out[0..14] is gross. Taking a 16-bit word and passing it to a 15-bit
     // bus (b/c we have a 15-bit memory address space). Why can't we just have a
     // 16-bit memory address space? Because our word size is 16-bits and we use
     // 1 of those bits to distinguish between A- and C-instructions.
-    ARegister(in=aluOrInstruction, load=loadA, out=registerOutA, out[0..14]=addressM);
+    ARegister(in=aluOrInstruction, load=writeA, out=registerOutA, out[0..14]=addressM);
 
 
     /**
      * D Register
      */
     // Load if d3 and is C-instruction
-    And(a=instruction[4], b=instruction[15], out=loadD);
-    DRegister(in=aluOut, load=loadD, out=registerOutD);
+    And(a=instruction[4], b=instruction[15], out=writeD);
+    DRegister(in=aluOut, load=writeD, out=registerOutD);
+
 
     /**
      * M
@@ -83,30 +85,30 @@ CHIP CPU {
     Mux16(a=registerOutA, b=inM, sel=instruction[12], out=aOrM);
 
     ALU(
-      x=registerOutD,
-      y=aOrM,
+      x=registerOutD, y=aOrM,
+
       zx=instruction[11],
       nx=instruction[10],
       zy=instruction[9],
       ny=instruction[8],
       f=instruction[7],
       no=instruction[6],
-      out=aluOut,
-      out=outM,
-      zr=aluIsZero,
-      ng=aluIsNeg
+
+      zr=aluIsZero, ng=aluIsNeg
+
+      out=aluOut, out=outM
     );
 
 
     /**
      * PC
      */
-    // Jumps
-    // Jump if ALU output is negative
+    // Jump Logic
+    // Jump if ALU output is negative and j1
     And(a=aluIsNeg, b=instruction[2], out=jumpNegative);
-    // Jump if ALU output is zero
+    // Jump if ALU output is zero and j2
     And(a=aluIsZero, b=instruction[1], out=jumpZero);
-    // Jump if ALU output is positive
+    // Jump if ALU output is positive and j0
     Not(in=aluIsNeg, out=notAluIsNeg);
     Not(in=aluIsZero, out=notAluIsZero);
     And(a=notAluIsNeg, b=notAluIsZero, out=aluIsPositive);
@@ -117,11 +119,7 @@ CHIP CPU {
       in[7]=jumpNegative,
       in[6]=jumpZero,
       in[5]=jumpPositive,
-      in[4]=false,
-      in[3]=false,
-      in[2]=false,
-      in[1]=false,
-      in[0]=false,
+      in[4]=false, in[3]=false, in[2]=false, in[1]=false, in[0]=false,
       out=wouldJump);
     And(a=wouldJump, b=instruction[15], out=shouldJump);
 
