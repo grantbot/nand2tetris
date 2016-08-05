@@ -11,133 +11,133 @@ import assembler_parser
 class TestAssemblerParser():
 
     def test_parser_init(self):
-        with assembler_parser.Parser('test.asm') as f:
-            assert isinstance(f.file_obj, io.IOBase)
+        with assembler_parser.Parser('test.asm') as p:
+            assert isinstance(p.file_obj, io.IOBase)
 
     def test_has_more_commands(self):
-        with assembler_parser.Parser('test.asm') as f:
+        with assembler_parser.Parser('test.asm') as p:
             for _ in range(10):
-                assert f.has_more_commands() is True
-                f.file_obj.readline()
+                assert p.has_more_commands() is True
+                p.file_obj.readline()
 
-            assert f.has_more_commands() is False
+            assert p.has_more_commands() is False
 
     def test_advance(self):
-        with assembler_parser.Parser('test.asm') as f:
-            assert f.advance() == '(START)'
-            assert f.current_command_raw == '(START)\n'
+        with assembler_parser.Parser('test.asm') as p:
+            assert p.advance() == '(START)'
+            assert p.current_command_raw == '(START)\n'
 
-            assert f.advance() == '@0'
-            assert f.current_command_raw == '      @0\n'
+            assert p.advance() == '@0'
+            assert p.current_command_raw == '      @0\n'
 
-            assert f.advance() == '@var'
-            assert f.current_command_raw == '    @var  // comment\n'
+            assert p.advance() == '@var'
+            assert p.current_command_raw == '    @var  // comment\n'
 
     def test_command_type(self):
-        with assembler_parser.Parser('test.asm') as f:
-            assert f.advance() == '(START)'
-            assert f.command_type() == assembler_parser.CommandType.L
+        with assembler_parser.Parser('test.asm') as p:
+            assert p.advance() == '(START)'
+            assert p.command_type() == assembler_parser.CommandType.L
 
-            assert f.advance() == '@0'
-            assert f.command_type() == assembler_parser.CommandType.A
+            assert p.advance() == '@0'
+            assert p.command_type() == assembler_parser.CommandType.A
 
-            assert f.advance() == '@var'
-            assert f.command_type() == assembler_parser.CommandType.A
+            assert p.advance() == '@var'
+            assert p.command_type() == assembler_parser.CommandType.A
 
-            assert f.advance() == 'D=A'
-            assert f.command_type() == assembler_parser.CommandType.C
+            assert p.advance() == 'D=A'
+            assert p.command_type() == assembler_parser.CommandType.C
 
-            assert f.advance() == 'AM=D+A'
-            assert f.command_type() == assembler_parser.CommandType.C
+            assert p.advance() == 'AM=D+A'
+            assert p.command_type() == assembler_parser.CommandType.C
 
-            assert f.advance() == 'D;JGT'
-            assert f.command_type() == assembler_parser.CommandType.C
+            assert p.advance() == 'D;JGT'
+            assert p.command_type() == assembler_parser.CommandType.C
 
     def test_symbol(self):
-        with assembler_parser.Parser('test.asm') as f:
-            assert f.advance() == '(START)'
-            assert f.symbol() == 'START'
+        with assembler_parser.Parser('test.asm') as p:
+            assert p.advance() == '(START)'
+            assert p.symbol() == 'START'
 
-            assert f.advance() == '@0'
-            assert f.symbol() == '0'
+            assert p.advance() == '@0'
+            assert p.symbol() == '0'
 
-            assert f.advance() == '@var'
-            assert f.symbol() == 'var'
+            assert p.advance() == '@var'
+            assert p.symbol() == 'var'
 
-            assert f.advance() == 'D=A'
-            assert f.symbol() == None
+            assert p.advance() == 'D=A'
+            assert p.symbol() == None
 
-            assert f.advance() == 'AM=D+A'
-            assert f.symbol() == None
+            assert p.advance() == 'AM=D+A'
+            assert p.symbol() == None
 
-            assert f.advance() == 'D;JGT'
-            assert f.symbol() == None
+            assert p.advance() == 'D;JGT'
+            assert p.symbol() == None
 
     def test_dest(self):
-        with assembler_parser.Parser('test.asm') as f:
-            assert f.advance() == '(START)'
-            assert f.dest() == None
+        with assembler_parser.Parser('test.asm') as p:
+            assert p.advance() == '(START)'
+            assert p.dest() == None
 
-            assert f.advance() == '@0'
-            assert f.dest() == None
+            assert p.advance() == '@0'
+            assert p.dest() == None
 
-            assert f.advance() == '@var'
-            assert f.dest() == None
+            assert p.advance() == '@var'
+            assert p.dest() == None
 
-            assert f.advance() == 'D=A'
-            assert f.dest() == 'D'
+            assert p.advance() == 'D=A'
+            assert p.dest() == 'D'
 
-            assert f.advance() == 'AM=D+A'
-            assert f.dest() == 'AM'
+            assert p.advance() == 'AM=D+A'
+            assert p.dest() == 'AM'
 
-            assert f.advance() == 'D;JGT'
-            assert f.dest() == None
+            assert p.advance() == 'D;JGT'
+            assert p.dest() == None
 
     def test_comp(self):
-        with assembler_parser.Parser('test.asm') as f:
-            assert f.advance() == '(START)'
-            assert f.comp() == None
+        with assembler_parser.Parser('test.asm') as p:
+            assert p.advance() == '(START)'
+            assert p.comp() == None
 
-            assert f.advance() == '@0'
-            assert f.comp() == None
+            assert p.advance() == '@0'
+            assert p.comp() == None
 
-            assert f.advance() == '@var'
-            assert f.comp() == None
+            assert p.advance() == '@var'
+            assert p.comp() == None
 
-            assert f.advance() == 'D=A'
-            assert f.comp() == None
+            assert p.advance() == 'D=A'
+            assert p.comp() == None
 
-            assert f.advance() == 'AM=D+A'
-            assert f.comp() == None
+            assert p.advance() == 'AM=D+A'
+            assert p.comp() == None
 
-            assert f.advance() == 'D;JGT'
-            assert f.comp() == 'D'
+            assert p.advance() == 'D;JGT'
+            assert p.comp() == 'D'
 
-            assert f.advance() == '0;JMP'
-            assert f.comp() == '0'
+            assert p.advance() == '0;JMP'
+            assert p.comp() == '0'
 
     def test_jump(self):
-        with assembler_parser.Parser('test.asm') as f:
-            assert f.advance() == '(START)'
-            assert f.jump() == None
+        with assembler_parser.Parser('test.asm') as p:
+            assert p.advance() == '(START)'
+            assert p.jump() == None
 
-            assert f.advance() == '@0'
-            assert f.jump() == None
+            assert p.advance() == '@0'
+            assert p.jump() == None
 
-            assert f.advance() == '@var'
-            assert f.jump() == None
+            assert p.advance() == '@var'
+            assert p.jump() == None
 
-            assert f.advance() == 'D=A'
-            assert f.jump() == None
+            assert p.advance() == 'D=A'
+            assert p.jump() == None
 
-            assert f.advance() == 'AM=D+A'
-            assert f.jump() == None
+            assert p.advance() == 'AM=D+A'
+            assert p.jump() == None
 
-            assert f.advance() == 'D;JGT'
-            assert f.jump() == 'JGT'
+            assert p.advance() == 'D;JGT'
+            assert p.jump() == 'JGT'
 
-            assert f.advance() == '0;JMP'
-            assert f.jump() == 'JMP'
+            assert p.advance() == '0;JMP'
+            assert p.jump() == 'JMP'
 
     @pytest.mark.parametrize('input_str, expected', [
         ('@var'               , '@var'),
