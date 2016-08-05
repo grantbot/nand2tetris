@@ -1,6 +1,8 @@
 (START)
+
+      // comment
       @0
-    @var
+    @var  // comment
     D=A
     AM=D+A
     D;JGT

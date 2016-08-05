@@ -7,6 +7,7 @@ import pytest
 import assembler_parser
 
 
+# TODO pytest.mark.parametrize is dope, refactor some of these tests
 class TestAssemblerParser():
 
     def test_parser_init(self):
@@ -15,7 +16,7 @@ class TestAssemblerParser():
 
     def test_has_more_commands(self):
         with assembler_parser.Parser('test.asm') as f:
-            for _ in range(8):
+            for _ in range(10):
                 assert f.has_more_commands() is True
                 f.file_obj.readline()
 
@@ -23,13 +24,14 @@ class TestAssemblerParser():
 
     def test_advance(self):
         with assembler_parser.Parser('test.asm') as f:
-            # Read first two lines
             assert f.advance() == '(START)'
             assert f.current_command_raw == '(START)\n'
 
             assert f.advance() == '@0'
             assert f.current_command_raw == '      @0\n'
 
+            assert f.advance() == '@var'
+            assert f.current_command_raw == '    @var  // comment\n'
 
     def test_command_type(self):
         with assembler_parser.Parser('test.asm') as f:
@@ -136,3 +138,18 @@ class TestAssemblerParser():
 
             assert f.advance() == '0;JMP'
             assert f.jump() == 'JMP'
+
+    @pytest.mark.parametrize('input_str, expected', [
+        ('@var'               , '@var'),
+        ('     @var  // comm' , '@var'),
+        ('     D;JGT'         , 'D;JGT'),
+        ('     D;JGT  // comm', 'D;JGT'),
+        ('     AM=D+A'        , 'AM=D+A'),
+        ('     D=A  // comm'  , 'D=A'),
+        ('// comment'         , ''),
+        ('   // comment'      , ''),
+        ('\n'                 , ''),
+    ])
+    def test_clean(self, input_str, expected):
+        clean = assembler_parser.Parser._clean
+        assert clean(input_str) == expected
