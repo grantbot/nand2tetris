@@ -1,5 +1,6 @@
 """Code module of the Assembler"""
 
+
 DEST_MNEM_BINARY_MAP = {
     'M': '001',
     'D': '010',
@@ -17,31 +18,39 @@ def dest(dest_mnem: str) -> str:
         return DEST_MNEM_BINARY_MAP[dest_mnem]
     return '000'
 
+
 COMP_MNEM_BINARY_MAP = {
+    # Where 'X' can be either 'A' or 'M'. Does not affect comp mnemonic parsing.
     '0': '101010',
     '1': '111111',
     '-1': '111010',
     'D': '001100',
-    'A': '110000',
+    'X': '110000',
     '!D': '001101',
-    '!A': '110001',
+    '!X': '110001',
     '-D': '001111',
-    '-A': '110001',
+    '-X': '110001',
     'D+1': '011111',
-    'A+1': '110111',
+    'X+1': '110111',
     'D-1': '001110',
-    'A-1': '110010',
-    'D+A': '000010',
-    'D-A': '010011',
-    'A-D': '000111',
-    'D&A': '000000',
-    'D|A': '010101',
+    'X-1': '110010',
+    'D+X': '000010',
+    'D-X': '010011',
+    'X-D': '000111',
+    'D&X': '000000',
+    'D|X': '010101',
 }
 
 
 def comp(comp_mnem: str) -> str:
-    """Return the binary code of the 'comp' part of a C-Command"""
-    return COMP_MNEM_BINARY_MAP[comp_mnem]
+    """Return the binary code of the 'comp' part of a C-Command
+
+    Also returns the appropriate value for the a-bit of a C-Command, depening
+    on whether A or M is used in the calculation.
+    """
+    a_bit = '1' if 'M' in comp_mnem else '0'
+    normalized = comp_mnem.replace('A', 'X').replace('M', 'X')
+    return COMP_MNEM_BINARY_MAP[normalized], a_bit
 
 
 JUMP_MNEM_BINARY_MAP = {
