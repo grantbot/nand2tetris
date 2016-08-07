@@ -2,25 +2,25 @@
 
 import pytest
 
-import assembler_symbol
+import assembler_symbol as symbol
 
 
 class TestSymbolTable:
 
     @pytest.fixture
     def sym_table(self):
-        return assembler_symbol.SymbolTable()
+        return symbol.SymbolTable()
 
     @pytest.mark.parametrize('input_symbol, expctd_addr', zip(
-        assembler_symbol.DEFAULT_LABELS.keys(),
-        assembler_symbol.DEFAULT_LABELS.values(),
+        symbol.DEFAULT_LABELS.keys(),
+        symbol.DEFAULT_LABELS.values(),
     ))
     def test_init_defaults(self, sym_table, input_symbol, expctd_addr):
         assert sym_table._table[input_symbol] == expctd_addr
 
     @pytest.mark.parametrize('input_symbol, expctd_addr', zip(
-        assembler_symbol.DEFAULT_LABELS.keys(),
-        assembler_symbol.DEFAULT_LABELS.values(),
+        symbol.DEFAULT_LABELS.keys(),
+        symbol.DEFAULT_LABELS.values(),
     ))
     def test_get_address(self, sym_table, input_symbol, expctd_addr):
         assert sym_table.get_address(input_symbol) == expctd_addr
@@ -29,7 +29,7 @@ class TestSymbolTable:
         with pytest.raises(KeyError):
             sym_table.get_address('bad_address')
 
-    @pytest.mark.parametrize('input_symbol', assembler_symbol.DEFAULT_LABELS.keys())
+    @pytest.mark.parametrize('input_symbol', symbol.DEFAULT_LABELS.keys())
     def test_contains(self, sym_table, input_symbol):
         assert sym_table.contains(input_symbol) is True
 

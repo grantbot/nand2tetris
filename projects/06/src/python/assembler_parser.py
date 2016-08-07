@@ -21,8 +21,6 @@ class Parser:
     TODO
     - has_more_commands thinks all lines are commands, even if they're a comment
     or just a \n.
-
-
     """
     def __init__(self, file_path: str):
         dir_path = os.path.dirname(os.path.abspath(__file__))

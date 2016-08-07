@@ -4,18 +4,18 @@ import io
 
 import pytest
 
-import assembler_parser
+import assembler_parser as parser
 
 
 # TODO pytest.mark.parametrize is dope, refactor some of these tests
 class TestAssemblerParser:
 
     def test_parser_init(self):
-        with assembler_parser.Parser('test.asm') as p:
+        with parser.Parser('test.asm') as p:
             assert isinstance(p.file_obj, io.IOBase)
 
     def test_has_more_commands(self):
-        with assembler_parser.Parser('test.asm') as p:
+        with parser.Parser('test.asm') as p:
             for _ in range(10):
                 assert p.has_more_commands() is True
                 p.file_obj.readline()
@@ -23,7 +23,7 @@ class TestAssemblerParser:
             assert p.has_more_commands() is False
 
     def test_advance(self):
-        with assembler_parser.Parser('test.asm') as p:
+        with parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
             assert p.current_command_raw == '(START)\n'
 
@@ -34,27 +34,27 @@ class TestAssemblerParser:
             assert p.current_command_raw == '    @var  // comment\n'
 
     def test_command_type(self):
-        with assembler_parser.Parser('test.asm') as p:
+        with parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
-            assert p.command_type() == assembler_parser.CommandType.L
+            assert p.command_type() == parser.CommandType.L
 
             assert p.advance() == '@0'
-            assert p.command_type() == assembler_parser.CommandType.A
+            assert p.command_type() == parser.CommandType.A
 
             assert p.advance() == '@var'
-            assert p.command_type() == assembler_parser.CommandType.A
+            assert p.command_type() == parser.CommandType.A
 
             assert p.advance() == 'D=A'
-            assert p.command_type() == assembler_parser.CommandType.C
+            assert p.command_type() == parser.CommandType.C
 
             assert p.advance() == 'AM=D+A'
-            assert p.command_type() == assembler_parser.CommandType.C
+            assert p.command_type() == parser.CommandType.C
 
             assert p.advance() == 'D;JGT'
-            assert p.command_type() == assembler_parser.CommandType.C
+            assert p.command_type() == parser.CommandType.C
 
     def test_symbol(self):
-        with assembler_parser.Parser('test.asm') as p:
+        with parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
             assert p.symbol() == 'START'
 
@@ -74,7 +74,7 @@ class TestAssemblerParser:
             assert p.symbol() is None
 
     def test_dest(self):
-        with assembler_parser.Parser('test.asm') as p:
+        with parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
             assert p.dest() is None
 
@@ -94,7 +94,7 @@ class TestAssemblerParser:
             assert p.dest() is None
 
     def test_comp(self):
-        with assembler_parser.Parser('test.asm') as p:
+        with parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
             assert p.comp() is None
 
@@ -120,7 +120,7 @@ class TestAssemblerParser:
             assert p.comp() == '0'
 
     def test_jump(self):
-        with assembler_parser.Parser('test.asm') as p:
+        with parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
             assert p.jump() is None
 
@@ -157,5 +157,5 @@ class TestAssemblerParser:
         ('\n'                 , ''),
     ])
     def test_clean(self, input_str, expected):
-        clean = assembler_parser.Parser._clean
+        clean = parser.Parser._clean
         assert clean(input_str) == expected

@@ -2,7 +2,7 @@
 
 import pytest
 
-import assembler_code
+import assembler_code as code
 
 
 class TestAssemblerCode:
@@ -19,7 +19,7 @@ class TestAssemblerCode:
         ('AMD', '111'),
     ])
     def test_dest(self, test_input, expected):
-        assert assembler_code.dest(test_input) == expected
+        assert code.dest(test_input) == expected
 
     @pytest.mark.parametrize('comp_input, expected', [
         ('0', ('101010', '0')),
@@ -53,7 +53,7 @@ class TestAssemblerCode:
         ('D|M', ('010101', '1')),
     ])
     def test_comp(self, comp_input, expected):
-        assert assembler_code.comp(comp_input) == expected
+        assert code.comp(comp_input) == expected
 
     @pytest.mark.parametrize('jump_input, expected', [
         (None, '000'),
@@ -67,4 +67,4 @@ class TestAssemblerCode:
         ('JMP', '111'),
     ])
     def jump_comp(self, jump_input, expected):
-        assert assembler_code.jump(jump_input) == expected
+        assert code.jump(jump_input) == expected
