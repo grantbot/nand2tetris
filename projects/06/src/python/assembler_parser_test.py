@@ -11,11 +11,11 @@ import assembler_parser as parser
 class TestAssemblerParser:
 
     def test_parser_init(self):
-        with parser.Parser('test.asm') as p:
+        with parser.Parser('testfiles/test.asm') as p:
             assert isinstance(p.file_obj, io.IOBase)
 
     def test_has_more_commands(self):
-        with parser.Parser('test.asm') as p:
+        with parser.Parser('testfiles/test.asm') as p:
             for _ in range(10):
                 assert p.has_more_commands() is True
                 p.file_obj.readline()
@@ -23,7 +23,7 @@ class TestAssemblerParser:
             assert p.has_more_commands() is False
 
     def test_advance(self):
-        with parser.Parser('test.asm') as p:
+        with parser.Parser('testfiles/test.asm') as p:
             assert p.advance() == '(START)'
             assert p.current_command_raw == '(START)\n'
 
@@ -34,7 +34,7 @@ class TestAssemblerParser:
             assert p.current_command_raw == '    @var  // comment\n'
 
     def test_command_type(self):
-        with parser.Parser('test.asm') as p:
+        with parser.Parser('testfiles/test.asm') as p:
             assert p.advance() == '(START)'
             assert p.command_type() == parser.CommandType.L
 
@@ -54,7 +54,7 @@ class TestAssemblerParser:
             assert p.command_type() == parser.CommandType.C
 
     def test_symbol(self):
-        with parser.Parser('test.asm') as p:
+        with parser.Parser('testfiles/test.asm') as p:
             assert p.advance() == '(START)'
             assert p.symbol() == 'START'
 
@@ -74,7 +74,7 @@ class TestAssemblerParser:
             assert p.symbol() is None
 
     def test_dest(self):
-        with parser.Parser('test.asm') as p:
+        with parser.Parser('testfiles/test.asm') as p:
             assert p.advance() == '(START)'
             assert p.dest() is None
 
@@ -94,7 +94,7 @@ class TestAssemblerParser:
             assert p.dest() is None
 
     def test_comp(self):
-        with parser.Parser('test.asm') as p:
+        with parser.Parser('testfiles/test.asm') as p:
             assert p.advance() == '(START)'
             assert p.comp() is None
 
@@ -120,7 +120,7 @@ class TestAssemblerParser:
             assert p.comp() == '0'
 
     def test_jump(self):
-        with parser.Parser('test.asm') as p:
+        with parser.Parser('testfiles/test.asm') as p:
             assert p.advance() == '(START)'
             assert p.jump() is None
 
