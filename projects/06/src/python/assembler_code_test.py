@@ -8,14 +8,15 @@ import assembler_code
 class TestAssemblerCode:
 
     @pytest.mark.parametrize('test_input, expected', [
-        ('D;JGT', '000'),
-        ('M=M+D', '001'),
-        ('D=M+D', '010'),
-        ('MD=M+D', '011'),
-        ('A=M+D', '100'),
-        ('AM=M+D', '101'),
-        ('AD=M+D', '110'),
-        ('AMD=M+D', '111'),
+        (None, '000'),
+        ('', '000'),
+        ('M', '001'),
+        ('D', '010'),
+        ('MD', '011'),
+        ('A', '100'),
+        ('AM', '101'),
+        ('AD', '110'),
+        ('AMD', '111'),
     ])
     def test_dest(self, test_input, expected):
         assert assembler_code.dest(test_input) == expected
@@ -41,12 +42,11 @@ class TestAssemblerCode:
         ('D|A', '010101'),
     ])
     def test_comp(self, comp_input, expected):
-        assert assembler_code.comp('D=' + comp_input) == expected
-        assert assembler_code.comp('AMD=' + comp_input) == expected
-        assert assembler_code.comp(comp_input + ';JGT') == expected
-        assert assembler_code.comp(comp_input + ';JMP') == expected
+        assert assembler_code.comp(comp_input) == expected
 
     @pytest.mark.parametrize('jump_input, expected', [
+        (None, '000'),
+        ('', '000'),
         ('JGT', '001'),
         ('JEQ', '010'),
         ('JGE', '011'),
@@ -56,6 +56,4 @@ class TestAssemblerCode:
         ('JMP', '111'),
     ])
     def jump_comp(self, jump_input, expected):
-        assert assembler_code.jump('D;' + jump_input) == expected
-        assert assembler_code.jump('AMD;' + jump_input) == expected
-        assert assembler_code.jump('D=M') == '000'
+        assert assembler_code.jump(jump_input) == expected

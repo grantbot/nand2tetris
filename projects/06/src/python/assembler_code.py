@@ -1,30 +1,21 @@
 """Code module of the Assembler"""
 
+DEST_MNEM_BINARY_MAP = {
+    'M': '001',
+    'D': '010',
+    'MD': '011',
+    'A': '100',
+    'AM': '101',
+    'AD': '110',
+    'AMD': '111',
+}
 
-def dest(command: str) -> str:
-    """Return the binary code of the 'dest' part of a C-Command.
 
-    Input must be a well-formed C-Command.
-    """
-    if '=' not in command:
-        return '000'
-
-    a = '0'
-    d = '0'
-    m = '0'
-
-    dest_mnem = command.split('=', 1)[0]
-
-    for dest in dest_mnem:
-        if dest == 'A':
-            a = '1'
-        if dest == 'D':
-            d = '1'
-        if dest == 'M':
-            m = '1'
-
-    return a + d + m
-
+def dest(dest_mnem: str) -> str:
+    """Return the binary code of the 'dest' part of a C-Command"""
+    if dest_mnem:
+        return DEST_MNEM_BINARY_MAP[dest_mnem]
+    return '000'
 
 COMP_MNEM_BINARY_MAP = {
     '0': '101010',
@@ -48,13 +39,9 @@ COMP_MNEM_BINARY_MAP = {
 }
 
 
-def comp(command: str) -> str:
-    """Return the binary code of the 'comp' part of a C-Command.
-
-    Input must be a well-formed C-Command.
-    """
-    comp = command.split('=', 1)[1] if '=' in command else command.split(';', 1)[0]
-    return COMP_MNEM_BINARY_MAP[comp]
+def comp(comp_mnem: str) -> str:
+    """Return the binary code of the 'comp' part of a C-Command"""
+    return COMP_MNEM_BINARY_MAP[comp_mnem]
 
 
 JUMP_MNEM_BINARY_MAP = {
@@ -68,13 +55,8 @@ JUMP_MNEM_BINARY_MAP = {
 }
 
 
-def jump(command: str) -> str:
-    """Return the binary code of the 'jump' part of a C-Command
-
-    Input must be a well-formed C-Command.
-    """
-    if ';' not in command:
-        return '000'
-
-    comp = command.split(';', 1)[1]
-    return JUMP_MNEM_BINARY_MAP[comp]
+def jump(jump_mnem: str) -> str:
+    """Return the binary code of the 'jump' part of a C-Command"""
+    if jump_mnem:
+        return JUMP_MNEM_BINARY_MAP[jump_mnem]
+    return '000'
