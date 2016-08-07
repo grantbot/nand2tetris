@@ -3,9 +3,20 @@ from functools import partial
 
 import assembler
 import assembler_parser
+import assembler_symbol
 
 
 class TestAssembler:
+
+    def test_extract_labels(self):
+        sym_table = assembler_symbol.SymbolTable()
+
+        with assembler_parser.Parser('test.asm') as p:
+            sym_table = assembler.extract_labels(p, sym_table)
+
+        assert sym_table.get_address('START') == 1
+        assert sym_table.get_address('END') == 6
+        assert len(sym_table._table.keys()) == len(assembler_symbol.DEFAULT_LABELS.keys()) + 2
 
     def test_add_sans_symbols(self):
         # Gen test output

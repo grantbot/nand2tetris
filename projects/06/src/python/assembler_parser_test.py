@@ -113,6 +113,9 @@ class TestAssemblerParser:
             assert p.advance() == 'D;JGT'
             assert p.comp() == 'D'
 
+            assert p.advance() == '(END)'
+            assert p.comp() is None
+
             assert p.advance() == '0;JMP'
             assert p.comp() == '0'
 
@@ -135,6 +138,9 @@ class TestAssemblerParser:
 
             assert p.advance() == 'D;JGT'
             assert p.jump() == 'JGT'
+
+            assert p.advance() == '(END)'
+            assert p.jump() is None
 
             assert p.advance() == '0;JMP'
             assert p.jump() == 'JMP'

@@ -6,5 +6,5 @@
     D=A
     AM=D+A
     D;JGT
+(END)
     0;JMP
-  (END)
