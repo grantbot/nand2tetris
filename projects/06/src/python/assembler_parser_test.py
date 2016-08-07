@@ -105,10 +105,10 @@ class TestAssemblerParser:
             assert p.comp() is None
 
             assert p.advance() == 'D=A'
-            assert p.comp() is None
+            assert p.comp() == 'A'
 
             assert p.advance() == 'AM=D+A'
-            assert p.comp() is None
+            assert p.comp() == 'D+A'
 
             assert p.advance() == 'D;JGT'
             assert p.comp() == 'D'

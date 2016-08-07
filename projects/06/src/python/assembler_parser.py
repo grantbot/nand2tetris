@@ -52,7 +52,7 @@ class Parser:
 
     def command_type(self) -> CommandType:
         command = self.current_command
-        # TODO Be stricter? Use regexes?
+        # TODO Be stricter? Use regexes? Only allow accepted mnemonics?
         if '@' in command:
             return CommandType.A
         elif '=' in command or ';' in command:
@@ -71,8 +71,8 @@ class Parser:
 
     def comp(self) -> str:
         if self.command_type() == CommandType.C:
-            if ';' in self.current_command:
-                return self.current_command.split(';', 1)[0]
+            return self.current_command.split('=', 1)[1] if '=' in self.current_command \
+                else self.current_command.split(';', 1)[0]
 
     def jump(self) -> str:
         if self.command_type() == CommandType.C:
