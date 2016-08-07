@@ -52,7 +52,7 @@ class Parser:
 
     def command_type(self) -> CommandType:
         command = self.current_command
-        # TODO Use regexes?
+        # TODO Be stricter? Use regexes?
         if '@' in command:
             return CommandType.A
         elif '=' in command or ';' in command:
@@ -67,17 +67,17 @@ class Parser:
     def dest(self) -> str:
         if self.command_type() == CommandType.C:
             if '=' in self.current_command:
-                return self.current_command.split('=')[0]
+                return self.current_command.split('=', 1)[0]
 
     def comp(self) -> str:
         if self.command_type() == CommandType.C:
             if ';' in self.current_command:
-                return self.current_command.split(';')[0]
+                return self.current_command.split(';', 1)[0]
 
     def jump(self) -> str:
         if self.command_type() == CommandType.C:
             if ';' in self.current_command:
-                return self.current_command.split(';')[1]
+                return self.current_command.split(';', 1)[1]
 
     @staticmethod
     def _clean(raw_command: str) -> str:

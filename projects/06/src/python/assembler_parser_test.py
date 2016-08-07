@@ -8,7 +8,7 @@ import assembler_parser
 
 
 # TODO pytest.mark.parametrize is dope, refactor some of these tests
-class TestAssemblerParser():
+class TestAssemblerParser:
 
     def test_parser_init(self):
         with assembler_parser.Parser('test.asm') as p:
