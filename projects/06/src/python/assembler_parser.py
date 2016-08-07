@@ -1,7 +1,6 @@
 """Parser module of the Assembler"""
 
 import enum
-import io
 import os
 
 

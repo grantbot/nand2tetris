@@ -65,24 +65,24 @@ class TestAssemblerParser():
             assert p.symbol() == 'var'
 
             assert p.advance() == 'D=A'
-            assert p.symbol() == None
+            assert p.symbol() is None
 
             assert p.advance() == 'AM=D+A'
-            assert p.symbol() == None
+            assert p.symbol() is None
 
             assert p.advance() == 'D;JGT'
-            assert p.symbol() == None
+            assert p.symbol() is None
 
     def test_dest(self):
         with assembler_parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
-            assert p.dest() == None
+            assert p.dest() is None
 
             assert p.advance() == '@0'
-            assert p.dest() == None
+            assert p.dest() is None
 
             assert p.advance() == '@var'
-            assert p.dest() == None
+            assert p.dest() is None
 
             assert p.advance() == 'D=A'
             assert p.dest() == 'D'
@@ -91,24 +91,24 @@ class TestAssemblerParser():
             assert p.dest() == 'AM'
 
             assert p.advance() == 'D;JGT'
-            assert p.dest() == None
+            assert p.dest() is None
 
     def test_comp(self):
         with assembler_parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
-            assert p.comp() == None
+            assert p.comp() is None
 
             assert p.advance() == '@0'
-            assert p.comp() == None
+            assert p.comp() is None
 
             assert p.advance() == '@var'
-            assert p.comp() == None
+            assert p.comp() is None
 
             assert p.advance() == 'D=A'
-            assert p.comp() == None
+            assert p.comp() is None
 
             assert p.advance() == 'AM=D+A'
-            assert p.comp() == None
+            assert p.comp() is None
 
             assert p.advance() == 'D;JGT'
             assert p.comp() == 'D'
@@ -119,19 +119,19 @@ class TestAssemblerParser():
     def test_jump(self):
         with assembler_parser.Parser('test.asm') as p:
             assert p.advance() == '(START)'
-            assert p.jump() == None
+            assert p.jump() is None
 
             assert p.advance() == '@0'
-            assert p.jump() == None
+            assert p.jump() is None
 
             assert p.advance() == '@var'
-            assert p.jump() == None
+            assert p.jump() is None
 
             assert p.advance() == 'D=A'
-            assert p.jump() == None
+            assert p.jump() is None
 
             assert p.advance() == 'AM=D+A'
-            assert p.jump() == None
+            assert p.jump() is None
 
             assert p.advance() == 'D;JGT'
             assert p.jump() == 'JGT'
