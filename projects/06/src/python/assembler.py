@@ -29,6 +29,7 @@ def asm_to_hack(filename: str) -> typing.Iterable(str):
                 sym_table.contains(sym) or sym_table.add_entry(sym)
                 yield format(sym_table.get_address(sym), BINARY_FMT)
 
+            # C commands
             elif command_type is parser.CommandType.C:
                 dest = code.dest(asm.dest())
                 comp, a_bit = code.comp(asm.comp())
@@ -41,8 +42,8 @@ def asm_to_hack(filename: str) -> typing.Iterable(str):
 
 def extract_labels(asm_obj: parser.Parser) -> symbol.SymbolTable:
     """Save label pseudocommands into a given symbol table"""
-    instr_counter = 1
     sym_table = symbol.SymbolTable()
+    instr_counter = 0
 
     while asm_obj.has_more_commands():
         command_type = _next_command(asm_obj)

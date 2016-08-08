@@ -11,13 +11,11 @@ import assembler_symbol as symbol
 class TestAssembler:
 
     def test_extract_labels(self):
-        sym_table = symbol.SymbolTable()
-
         with parser.Parser('testfiles/test.asm') as p:
-            sym_table = assembler.extract_labels(p, sym_table)
+            sym_table = assembler.extract_labels(p)
 
-        assert sym_table.get_address('START') == 1
-        assert sym_table.get_address('END') == 6
+        assert sym_table.get_address('START') == 0
+        assert sym_table.get_address('END') == 5
         assert len(sym_table._table.keys()) == len(symbol.DEFAULT_LABELS.keys()) + 2
 
     @pytest.mark.parametrize('asm_input_path, expected_binary_output_path', [
