@@ -20,6 +20,9 @@ class TestAssembler:
 
     @pytest.mark.parametrize('asm_input_path, expected_binary_output_path', [
         ('testfiles/Add.asm', 'testfiles/Add.hack'),
+        ('testfiles/Max.asm', 'testfiles/Max.hack'),
+        ('testfiles/Rect.asm', 'testfiles/Rect.hack'),
+        ('testfiles/Pong.asm', 'testfiles/Pong.hack'),
     ])
     def test_assembler(self, asm_input_path, expected_binary_output_path):
         # Gen test output
