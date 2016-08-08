@@ -19,10 +19,6 @@ class Parser:
     parses it, and provides convenient access to the command’s components
     (fields and symbols). In addition, removes all white space and comments.
     See p. 113 for API documentation.
-
-    TODO
-    - has_more_commands thinks all lines are commands, even if they're a comment
-    or just a \n.
     """
     def __init__(self, file_path: str):
         dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -36,10 +32,19 @@ class Parser:
         return self
 
     def has_more_commands(self) -> bool:
-        """Check current position relative to file size."""
         current_pos = self.file_obj.tell()
-        size = os.fstat(self.file_obj.fileno()).st_size
-        return current_pos < size
+        next_line = self.file_obj.readline()
+
+        # Turns out tell() is useless for anything other than passing to
+        # seek()--thus, comparing it with os.stat(file_obj.fileno()).st_size
+        # won't work. https://bugs.python.org/issue26016
+        # Instead, we must rely on the fact that readline() returns '' at EOF.
+        # We should just be doing `for line in f.readlines()` but I'm
+        # sticking to the API on p. 113 cuz why not.
+        self.file_obj.seek(current_pos)
+
+        # readline() returns '' at EOF
+        return next_line is not ''
 
     def advance(self) -> str:
         """Load the next command, skipping if it's a comment or newline."""
