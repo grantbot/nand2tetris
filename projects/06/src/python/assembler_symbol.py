@@ -28,21 +28,29 @@ DEFAULT_LABELS = {
 
 
 class SymbolTable:
-    """Store/access default and user-defined symbols, labels
+    """Store/access variables (RAM addresses) and labels (ROM addresses)
 
     Pre-defined symbols are specified on p. 69.
     """
     def __init__(self):
         self._table = DEFAULT_LABELS.copy()
+        self._curr_ram_addr = 15
 
-    def add_entry(self, symbol: str, address: int) -> None:
+    def add_entry(self, symbol: str, address: int=None) -> None:
         if symbol in DEFAULT_LABELS:
             raise ValueError('No overwriting default labels!')
 
-        self._table[symbol] = address
+        # If `address` is given then `symbol` is a label (ROM address),
+        # otherwise it's a new variable (RAM address).
+        address = address if address is not None else self._incr_ram_addr()
+        self._table[symbol] = int(address)
 
     def contains(self, symbol: str) -> bool:
         return symbol in self._table
 
     def get_address(self, symbol: str) -> int:
         return self._table[symbol]
+
+    def _incr_ram_addr(self):
+        self._curr_ram_addr += 1
+        return self._curr_ram_addr
