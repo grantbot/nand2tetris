@@ -2,10 +2,12 @@
 
 import enum
 import os
+import re
 
 
 class CommandType(enum.Enum):
-    A = 'A_COMMAND'
+    Anum = 'A_COMMAND_NUMERIC'  # e.g. `@12345`
+    Avar = 'A_COMMAND_VARIABLE'  # e.g. `@i`
     C = 'C_COMMAND'
     L = 'L_COMMAND'
 
@@ -50,16 +52,17 @@ class Parser:
 
     def command_type(self) -> CommandType:
         command = self.current_command
-        # TODO Be stricter? Use regexes? Only allow accepted mnemonics?
-        if '@' in command:
-            return CommandType.A
+        if self._is_a_num_command(command):
+            return CommandType.Anum
+        elif self._is_a_var_command(command):
+            return CommandType.Avar
         elif '=' in command or ';' in command:
             return CommandType.C
         elif '(' in command and ')' in command:
             return CommandType.L
 
     def symbol(self) -> str:
-        if self.command_type() in (CommandType.A, CommandType.L):
+        if self.command_type() in (CommandType.Anum, CommandType.Avar, CommandType.L):
             return self.current_command.strip('@()')
 
     def dest(self) -> str:
@@ -85,6 +88,18 @@ class Parser:
         this will return ''.
         """
         return raw_command.split('//')[0].strip('\n ')
+
+    @staticmethod
+    def _is_a_num_command(command: str) -> bool:
+        """Test if direct memory address command (A command w/ numbers only)"""
+        pattern = re.compile('^@\d+$')
+        return bool(pattern.match(command))
+
+    @staticmethod
+    def _is_a_var_command(command: str) -> bool:
+        """Test if symbol (variable) command. See p. 108 for spec."""
+        pattern = re.compile('^@\D[0-9A-Za-z_.$:]*$')
+        return bool(pattern.match(command))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.file_obj.close()

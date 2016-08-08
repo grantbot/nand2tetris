@@ -39,10 +39,10 @@ class TestAssemblerParser:
             assert p.command_type() == parser.CommandType.L
 
             assert p.advance() == '@0'
-            assert p.command_type() == parser.CommandType.A
+            assert p.command_type() == parser.CommandType.Anum
 
             assert p.advance() == '@var'
-            assert p.command_type() == parser.CommandType.A
+            assert p.command_type() == parser.CommandType.Avar
 
             assert p.advance() == 'D=A'
             assert p.command_type() == parser.CommandType.C
@@ -159,3 +159,30 @@ class TestAssemblerParser:
     def test_clean(self, input_str, expected):
         clean = parser.Parser._clean
         assert clean(input_str) == expected
+
+    @pytest.mark.parametrize('input_str, expected', [
+        ('@123', True),
+        ('@0123', True),
+        ('@1', True),
+        ('@i', False),
+        ('@var', False),
+    ])
+    def test_is_a_num_command(self, input_str, expected):
+        is_a_num = parser.Parser._is_a_num_command
+        assert is_a_num(input_str) is expected
+
+    @pytest.mark.parametrize('input_str, expected', [
+        ('@123', False),
+        ('@0123', False),
+        ('@1', False),
+        ('@9var', False),
+        ('@i', True),
+        ('@var', True),
+        ('@var:$', True),
+        ('@var1', True),
+        ('@var1.0', True),
+        ('@some_var', True),
+    ])
+    def test_is_a_var_command(self, input_str, expected):
+        is_a_var = parser.Parser._is_a_var_command
+        assert is_a_var(input_str) is expected

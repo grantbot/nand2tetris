@@ -6,15 +6,28 @@ import assembler_parser as parser
 import assembler_code as code
 import assembler_symbol as symbol
 
+BINARY_FMT = '016b'
+
 
 def asm_to_hack(filename: str) -> typing.Iterable(str):
     """Convert an .asm file to Hack binary"""
     with parser.Parser(filename) as asm:
+        # First Pass: init symbol table and extract label pseudocommands
+        sym_table = extract_labels(asm)
+
+        asm.file_obj.seek(0)
+
+        # Second Pass: Generate binary .hack commands
         while asm.has_more_commands():
             command_type = _next_command(asm)
 
-            if command_type is parser.CommandType.A:
-                yield format(int(asm.symbol()), '016b')
+            # @ commands
+            sym = asm.symbol()
+            if command_type is parser.CommandType.Anum:
+                yield format(int(sym), BINARY_FMT)
+            elif command_type is parser.CommandType.Avar:
+                sym_table.contains(sym) or sym_table.add_entry(sym)
+                yield format(sym_table.get_address(sym), BINARY_FMT)
 
             elif command_type is parser.CommandType.C:
                 dest = code.dest(asm.dest())
@@ -26,9 +39,10 @@ def asm_to_hack(filename: str) -> typing.Iterable(str):
                 yield result
 
 
-def extract_labels(asm_obj: parser.Parser, sym_table: symbol.SymbolTable) -> symbol.SymbolTable:
+def extract_labels(asm_obj: parser.Parser) -> symbol.SymbolTable:
     """Save label pseudocommands into a given symbol table"""
     instr_counter = 1
+    sym_table = symbol.SymbolTable()
 
     while asm_obj.has_more_commands():
         command_type = _next_command(asm_obj)
