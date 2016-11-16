@@ -6,6 +6,7 @@ import re
 
 
 class CommandType(enum.Enum):
+    """Allowed types for Hack Machine Language commands"""
     Anum = 'A_COMMAND_NUMERIC'  # e.g. `@12345`
     Avar = 'A_COMMAND_VARIABLE'  # e.g. `@i`
     C = 'C_COMMAND'
@@ -44,7 +45,7 @@ class Parser:
         self.file_obj.seek(current_pos)
 
         # readline() returns '' at EOF
-        return next_line is not ''
+        return next_line != ''
 
     def advance(self) -> str:
         """Load the next command, skipping if it's a comment or newline."""

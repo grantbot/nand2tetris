@@ -1,5 +1,6 @@
 """Symobl module of the Assembler"""
 
+# Convenience pointers to specific memory addresses
 DEFAULT_LABELS = {
     'R0': 0,
     'R1': 1,
@@ -28,7 +29,7 @@ DEFAULT_LABELS = {
 
 
 class SymbolTable:
-    """Store/access variables (RAM addresses) and labels (ROM addresses)
+    """Store/access variable (RAM addresses) and label (ROM addresses) pointers
 
     Pre-defined symbols are specified on p. 69.
     """
